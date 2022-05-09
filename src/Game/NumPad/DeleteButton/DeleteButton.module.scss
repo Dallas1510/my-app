@@ -1,0 +1,14 @@
+.DeleteButton{
+	width: 44px;
+	height: 40px;
+	border-radius: 5px;
+	font-size: 2em;
+	line-height: 30px;
+	padding: 0;
+	text-align: center;
+	transition: 0.3s;
+	border: 2px solid rgb(141, 141, 141);
+	&:hover{
+		background: #ccc;
+	}
+}
