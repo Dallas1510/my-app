@@ -552,13 +552,8 @@ class App extends React.Component {
   }
 
   doubleNumbersWarningShow(items, checkedItems) {
-    if (this.allDoubleNumbersWarnings.length >= 1) {
-      this.allDoubleNumbersWarnings.forEach(elem => {
-        elem.forEach(item => {
-          items[item[0]][item[1]].doubleNumberWarning = true;
-        })
-      })
-    } else if (this.allDoubleNumbersWarnings.every(item => {
+    console.log(checkedItems);
+    if (this.allDoubleNumbersWarnings.every(item => {
       return item.flat().join('') !== checkedItems.flat().join('')
     })
       || this.allDoubleNumbersWarnings.length === 0) {
@@ -566,6 +561,13 @@ class App extends React.Component {
         items[item[0]][item[1]].doubleNumberWarning = false;
       })
     }
+    if (this.allDoubleNumbersWarnings.length >= 1) {
+      this.allDoubleNumbersWarnings.forEach(elem => {
+        elem.forEach(item => {
+          items[item[0]][item[1]].doubleNumberWarning = true;
+        })
+      })
+    } 
     this.setState(() => {
       return { items };
     })
