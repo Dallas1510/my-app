@@ -438,6 +438,7 @@ class App extends React.Component {
     this.checkDoubleNumber = this.checkDoubleNumber.bind(this);
     this.onClickButtonHandler = this.onClickButtonHandler.bind(this);
     this.numberChangeHandler = this.numberChangeHandler.bind(this);
+    this.doubleNumbersWarningShow = this.doubleNumbersWarningShow.bind(this);
   }
 
 
@@ -461,7 +462,7 @@ class App extends React.Component {
         this.setState(() => {
           return { items: newItemsMaped }
         });
-        this.activeElem = [null, null]
+        this.activeElem = [null, null];
       } else {
         newItemsMaped[sectionIndex][itemIndex].isActive = true;
         this.activeElem = [sectionIndex, itemIndex];
@@ -522,30 +523,53 @@ class App extends React.Component {
     this.checkedVertItems = checkedItems;
   }
 
-  checkDoubleNumber(items, numArr, checkedItems) {
-    let arr = [...numArr];
+  checkDoubleNumber(arr, checkedItems) {
     let checkedNumbers = [];
+
     for (let i = 0; i <= arr.length - 1; i++) {
       if (checkedNumbers.includes(arr[i]) && this.allDoubleNumbersWarnings.length === 0) {
         this.allDoubleNumbersWarnings.push(checkedItems);
         break;
       } else if (checkedNumbers.includes(arr[i])
-        && this.allDoubleNumbersWarnings.some(item => item.flat().join('') !== checkedItems.flat().join(''))) {
+        && this.allDoubleNumbersWarnings.length >= 1
+        && this.allDoubleNumbersWarnings.every(item => {
+          return item.flat().join('') !== checkedItems.flat().join('')
+        })) {
         this.allDoubleNumbersWarnings.push(checkedItems);
+        break;
       } else if (!checkedNumbers.includes(arr[i])) {
         let index = this.allDoubleNumbersWarnings.findIndex(item => {
-          return item.flat().join('') === checkedItems.flat().join('')
+          return item.flat().join('') === checkedItems.flat().join('');
         })
-        this.allDoubleNumbersWarnings.splice(index, 1)
+        if (index >= 0) {
+          this.allDoubleNumbersWarnings.splice(index, 1);
+        }
       }
       if (!checkedNumbers.includes(arr[i]) && arr[i] != null) {
         checkedNumbers.push(arr[i]);
       }
     }
-    console.log(this.allDoubleNumbersWarnings);
-    // console.log(checkedItems);
   }
 
+  doubleNumbersWarningShow(items, checkedItems) {
+    if (this.allDoubleNumbersWarnings.length >= 1) {
+      this.allDoubleNumbersWarnings.forEach(elem => {
+        elem.forEach(item => {
+          items[item[0]][item[1]].doubleNumberWarning = true;
+        })
+      })
+    } else if (this.allDoubleNumbersWarnings.every(item => {
+      return item.flat().join('') !== checkedItems.flat().join('')
+    })
+      || this.allDoubleNumbersWarnings.length === 0) {
+      checkedItems.forEach(item => {
+        items[item[0]][item[1]].doubleNumberWarning = false;
+      })
+    }
+    this.setState(() => {
+      return { items };
+    })
+  }
 
   onClickButtonHandler(value) {
     let items = [...this.state.items];
@@ -553,14 +577,16 @@ class App extends React.Component {
     this.numberChangeHandler(items, value);
     this.rowDeterminant(items, this.horizontalPositions);
     this.colDeterminant(items, this.verticalPositions);
-    this.checkDoubleNumber(items, this.horizontalRow, this.checkedHorItems);
-    this.checkDoubleNumber(items, this.verticalCol, this.checkedVertItems);
+    this.checkDoubleNumber(this.horizontalRow, this.checkedHorItems);
+    this.checkDoubleNumber(this.verticalCol, this.checkedVertItems);
+    this.doubleNumbersWarningShow(items, this.checkedHorItems);
+    this.doubleNumbersWarningShow(items, this.checkedVertItems);
   }
 
   numberChangeHandler(items, value) {
     items[this.activeElem[0]][this.activeElem[1]].playerNumber = value;
     this.setState(() => {
-      return { items }
+      return { items };
     });
   }
 
