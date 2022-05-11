@@ -420,14 +420,15 @@ class App extends React.Component {
           doubleNumberWarning: false
         }],
       ],
-
     };
     this.numberButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     this.activeElem = [null, null];
     this.horizontalRow = [];
     this.verticalCol = [];
+    this.section = [];
     this.checkedHorItems = [];
     this.checkedVertItems = [];
+    this.checkedSection = [];
     this.horizontalPositions = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
     this.verticalPositions = [[0, 3, 6], [1, 4, 7], [2, 5, 8]];
     this.allDoubleNumbersWarnings = [];
@@ -439,6 +440,7 @@ class App extends React.Component {
     this.onClickButtonHandler = this.onClickButtonHandler.bind(this);
     this.numberChangeHandler = this.numberChangeHandler.bind(this);
     this.doubleNumbersWarningShow = this.doubleNumbersWarningShow.bind(this);
+    this.sectionDeterminant = this.sectionDeterminant.bind(this);
   }
 
 
@@ -523,6 +525,19 @@ class App extends React.Component {
     this.checkedVertItems = checkedItems;
   }
 
+  sectionDeterminant(items) {
+    let index = this.activeElem[0];
+    let numbersArr = [];
+    let checkedItems = [];
+
+    items[index].forEach((item, i) => {
+      numbersArr.push(item.playerNumber);
+      checkedItems.push([index, i]);
+    })
+    this.section = numbersArr;
+    this.checkedSection = checkedItems;
+  }
+
   checkDoubleNumber(arr, checkedItems) {
     let checkedNumbers = [];
 
@@ -552,7 +567,7 @@ class App extends React.Component {
   }
 
   doubleNumbersWarningShow(items, checkedItems) {
-    console.log(checkedItems);
+
     if (this.allDoubleNumbersWarnings.every(item => {
       return item.flat().join('') !== checkedItems.flat().join('')
     })
@@ -567,7 +582,8 @@ class App extends React.Component {
           items[item[0]][item[1]].doubleNumberWarning = true;
         })
       })
-    } 
+    }
+
     this.setState(() => {
       return { items };
     })
@@ -579,10 +595,13 @@ class App extends React.Component {
     this.numberChangeHandler(items, value);
     this.rowDeterminant(items, this.horizontalPositions);
     this.colDeterminant(items, this.verticalPositions);
+    this.sectionDeterminant(items);
     this.checkDoubleNumber(this.horizontalRow, this.checkedHorItems);
     this.checkDoubleNumber(this.verticalCol, this.checkedVertItems);
+    this.checkDoubleNumber(this.section, this.checkedSection);
     this.doubleNumbersWarningShow(items, this.checkedHorItems);
     this.doubleNumbersWarningShow(items, this.checkedVertItems);
+    this.doubleNumbersWarningShow(items, this.checkedSection);
   }
 
   numberChangeHandler(items, value) {
