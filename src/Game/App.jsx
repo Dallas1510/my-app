@@ -1,11 +1,11 @@
 /* eslint-disable react/no-array-index-key */
-import React from "react";
-import Section from "./Section/Section";
-import Item from "./Section/Item/Item";
-import NumPad from "./NumPad/NumPad";
-import NumberButton from "./NumPad/NumberButton/NumberButton";
-import DeleteButton from "./NumPad/DeleteButton/DeleteButton";
-import classes from "./App.module.scss";
+import React from 'react';
+import Section from './Section/Section';
+import Item from './Section/Item/Item';
+import NumPad from './NumPad/NumPad';
+import NumberButton from './NumPad/NumberButton/NumberButton';
+import DeleteButton from './NumPad/DeleteButton/DeleteButton';
+import classes from './App.module.scss';
 
 class App extends React.Component {
    constructor(props) {
@@ -655,24 +655,22 @@ class App extends React.Component {
 
       for (let i = 0; i <= arr.length - 1; i++) {
          if (
-            checkedNumbers.includes(arr[i]) &&
-            this.allDoubleNumbersWarnings.length === 0
+            (checkedNumbers.includes(arr[i]) &&
+               this.allDoubleNumbersWarnings.length === 0) ||
+            (checkedNumbers.includes(arr[i]) &&
+               this.allDoubleNumbersWarnings.every(
+                  (item) =>
+                     item.flat().join('') !== checkedItems.flat().join('')
+               ))
          ) {
             this.allDoubleNumbersWarnings.push(checkedItems);
             break;
-         } else if (
-            checkedNumbers.includes(arr[i]) &&
-            this.allDoubleNumbersWarnings.length >= 1 &&
-            this.allDoubleNumbersWarnings.every(
-               (item) => item.flat().join("") !== checkedItems.flat().join("")
-            )
-         ) {
-            this.allDoubleNumbersWarnings.push(checkedItems);
-            break;
-         } else if (!checkedNumbers.includes(arr[i])) {
+         }
+         if (!checkedNumbers.includes(arr[i])) {
             const index = this.allDoubleNumbersWarnings.findIndex(
-               (item) => item.flat().join("") === checkedItems.flat().join("")
+               (item) => item.flat().join('') === checkedItems.flat().join('')
             );
+               
             if (index >= 0) {
                this.allDoubleNumbersWarnings.splice(index, 1);
             }
@@ -687,7 +685,7 @@ class App extends React.Component {
       const itemsClone = [...items];
       if (
          this.allDoubleNumbersWarnings.every(
-            (item) => item.flat().join("") !== checkedItems.flat().join("")
+            (item) => item.flat().join('') !== checkedItems.flat().join('')
          ) ||
          this.allDoubleNumbersWarnings.length === 0
       ) {
@@ -700,7 +698,7 @@ class App extends React.Component {
             elem.forEach((item) => {
                itemsClone[item[0]][item[1]].doubleNumberWarning = true;
             });
-         })
+         });
       }
 
       this.setState(() => ({ items: itemsClone }));
@@ -716,13 +714,18 @@ class App extends React.Component {
       return (
          <div>
             <div className={classes.app}>
-               {this.state.items.map((item, sectionIndex) => (
+               {this.state.items.map((_item, sectionIndex) => (
                   <Section key={sectionIndex}>
-                     {this.state.items[sectionIndex].map((elem, itemIndex) => (
+                     {this.state.items[sectionIndex].map((_elem, itemIndex) => (
                         <Item
                            key={itemIndex}
-                           isActive={this.state.items[sectionIndex][itemIndex].isActive}
-                           value={this.state.items[sectionIndex][itemIndex].playerNumber}
+                           isActive={
+                              this.state.items[sectionIndex][itemIndex].isActive
+                           }
+                           value={
+                              this.state.items[sectionIndex][itemIndex]
+                                 .playerNumber
+                           }
                            doubleNumberWarning={
                               this.state.items[sectionIndex][itemIndex]
                                  .doubleNumberWarning

@@ -1,13 +1,12 @@
-import classes from './DeleteButton.module.scss'
+import React from 'react';
+import classes from './DeleteButton.module.scss';
 
-function DeleteButton(props) {
-	return (
-		<button
-			className={classes.DeleteButton}
-			onClick={props.onClick}
-		>X
-		</button>
-	)
+function DeleteButton({onClick}) {
+   return (
+      <button type='button' className={classes.DeleteButton} onClick={onClick}>
+         X
+      </button>
+   );
 }
 
 export default DeleteButton;

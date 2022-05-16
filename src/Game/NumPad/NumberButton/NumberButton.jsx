@@ -1,14 +1,16 @@
-import classes from './NumberButton.module.scss'
+import React from 'react'
+import classes from './NumberButton.module.scss';
 
-function NumberButton(props) {
-	return (
-		<button
-			className={classes.numberButton}
-			onClick={props.onClick}
-		>
-			{props.value}
-		</button>
-	)
+function NumberButton({onClick, value}) {
+   return (
+      <button
+         type='button'
+         className={classes.numberButton}
+         onClick={onClick}
+      >
+         {value}
+      </button>
+   );
 }
 
 export default NumberButton;

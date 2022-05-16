@@ -1,9 +1,10 @@
+import React from 'react'
 import classes from './NumPad.module.scss';
 
-function NumPad(props) {
+function NumPad({children}) {
 	return (
 		<div className={classes.numpad}>
-			{props.children}
+			{children}
 		</div>
 	)
 }

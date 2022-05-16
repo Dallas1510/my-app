@@ -1,9 +1,10 @@
+import React from 'react'
 import classes from './Section.module.scss';
 
-function Section(props) {
+function Section({children}) {
 		return (
 			<div className={classes.section}>
-				{ props.children }
+				{ children }
 			</div>
 		)
 }

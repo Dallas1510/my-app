@@ -1,15 +1,17 @@
+import React from 'react';
 import classes from './Item.module.scss';
 
-function Item(props) {
-	return (
-		<div
-			className={`${classes.item} ${props.isActive ? classes.active : ''} ${props.doubleNumberWarning ? classes.doubleNumberWarning : ''}`}
-			onClick={props.onClick}
-		>
-			<p className={classes.param}>{props.value}</p>
-		</div>
-	);
+function Item({isActive, doubleNumberWarning, onClick, value}) {
+   return (
+      <div
+         className={`${classes.item} ${isActive && classes.active} ${
+            doubleNumberWarning && classes.doubleNumber
+         }`}
+         onClick={onClick}
+      >
+         <p>{value}</p>
+      </div>
+   );
 }
-
 
 export default Item;
