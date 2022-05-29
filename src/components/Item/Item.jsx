@@ -1,7 +1,8 @@
 import React from 'react';
 import classes from './Item.module.scss';
 
-function Item({ isActive, doubleNumberWarning, onClick, value }) {
+function Item({ itemProps, onClick }) {
+  const { isActive, doubleNumberWarning, playerNumber } = itemProps;
   return (
     <div
       className={`${classes.item} ${isActive && classes.active} ${
@@ -9,7 +10,7 @@ function Item({ isActive, doubleNumberWarning, onClick, value }) {
       }`}
       onClick={onClick}
     >
-      <p>{value}</p>
+      <p>{playerNumber}</p>
     </div>
   );
 }

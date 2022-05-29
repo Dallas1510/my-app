@@ -1,23 +1,23 @@
 /* eslint-disable no-loop-func */
-/* eslint-disable no-use-before-define */
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useState } from 'react';
-import Section from './Section/Section';
-import Item from './Section/Item/Item';
-import NumPad from './NumPad/NumPad';
-import NumberButton from './NumPad/NumberButton/NumberButton';
-import DeleteButton from './NumPad/DeleteButton/DeleteButton';
+import React, { useState } from 'react';
+import Section from '../components/Section/Section';
+import Item from '../components/Item/Item';
+import NumPad from '../components/NumPad/NumPad';
+import NumberButton from '../components/NumberButton/NumberButton';
 import classes from './App.module.scss';
+
+let activeElem = [null, null];
+let horizontalRow = [];
+let verticalCol = [];
+let section = [];
+let checkedHorItems = [];
+let checkedVertItems = [];
+let checkedSection = [];
+const allDoubleNumbersWarnings = [];
 
 function App() {
   const numberButtons = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  let activeElem = [null, null];
-  let horizontalRow = [];
-  let verticalCol = [];
-  let section = [];
-  let checkedHorItems = [];
-  let checkedVertItems = [];
-  let checkedSection = [];
   const horizontalPositions = [
     [0, 1, 2],
     [3, 4, 5],
@@ -28,7 +28,6 @@ function App() {
     [1, 4, 7],
     [2, 5, 8],
   ];
-  const allDoubleNumbersWarnings = [];
 
   const [items, setItems] = useState([
     [
@@ -553,44 +552,38 @@ function App() {
       newItemsMaped[sectionIndex][itemIndex].isActive = true;
       activeElem = [sectionIndex, itemIndex];
     }
-    setItems(newItemsMaped);
+    setItems(() => newItemsMaped);
   }
 
-
-  function onClickItemHandler(sectionIndex, itemIndex) {
-    const itemsClone = [...items];
-
-    onActiveElemHandler(sectionIndex, itemIndex);
-    rowDeterminant(itemsClone, horizontalPositions);
-    colDeterminant(itemsClone, verticalPositions);
-  }
-
-  function onClickButtonHandler(value) {
-    // const itemsClone = [...items];
-    numberChangeHandler(value);
-    rowDeterminant(items, horizontalPositions);
-    colDeterminant(items, verticalPositions);
-    sectionDeterminant(items);
-    checkDoubleNumber(horizontalRow, checkedHorItems);
-    checkDoubleNumber(verticalCol, checkedVertItems);
-    checkDoubleNumber(section, checkedSection);
-    doubleNumbersWarningShow(items, checkedHorItems);
-    doubleNumbersWarningShow(items, checkedVertItems);
-    doubleNumbersWarningShow(items, checkedSection);
-  }
-
-  function rowDeterminant(itemsArr, positions) {
-    const numbersArr = [];
+  function lineDeterminant(positions) {
     const checkedItems = [];
 
     positions.forEach((pos) => {
       if (pos.includes(activeElem[0])) {
         for (let i = 0; i <= pos.length - 1; i++) {
-          const arr = [...itemsArr[pos[i]]];
           positions.forEach((posItem) => {
             if (posItem.includes(activeElem[1])) {
               for (let j = 0; j <= posItem.length - 1; j++) {
                 checkedItems.push([pos[i], posItem[j]]);
+              }
+            }
+          });
+        }
+      }
+    });
+    return checkedItems;
+  }
+
+  function inputedNumbersLine(positions) {
+    const numbersArr = [];
+
+    positions.forEach((pos) => {
+      if (pos.includes(activeElem[0])) {
+        for (let i = 0; i <= pos.length - 1; i++) {
+          const arr = [...items[pos[i]]];
+          positions.forEach((posItem) => {
+            if (posItem.includes(activeElem[1])) {
+              for (let j = 0; j <= posItem.length - 1; j++) {
                 numbersArr.push(arr[posItem[j]].playerNumber);
               }
             }
@@ -598,55 +591,38 @@ function App() {
         }
       }
     });
-    horizontalRow = numbersArr;
-    checkedHorItems = checkedItems;
+    return numbersArr;
   }
 
-  function colDeterminant(itemsArr, positions) {
-    const numbersArr = [];
-    const checkedItems = [];
-
-    positions.forEach((pos) => {
-      if (pos.includes(activeElem[0])) {
-        for (let i = 0; i <= pos.length - 1; i++) {
-          const arr = [...itemsArr[pos[i]]];
-          positions.forEach((posItem) => {
-            if (posItem.includes(activeElem[1])) {
-              for (let j = 0; j <= posItem.length - 1; j++) {
-                checkedItems.push([pos[i], posItem[j]]);
-                numbersArr.push(arr[posItem[j]].playerNumber);
-              }
-            }
-          });
-        }
-      }
-    });
-    verticalCol = numbersArr;
-    checkedVertItems = checkedItems;
-  }
-
-  function sectionDeterminant(itemsArr) {
+  function sectionDeterminant() {
     const index = activeElem[0];
-    const numbersArr = [];
     const checkedItems = [];
 
-    itemsArr[index].forEach((item, i) => {
-      numbersArr.push(item.playerNumber);
+    items[index].forEach((_, i) => {
       checkedItems.push([index, i]);
     });
-    section = numbersArr;
-    checkedSection = checkedItems;
+    checkedSection = [...checkedItems];
   }
 
-  function checkDoubleNumber(arr, checkedItems) {
+  function inputedNumbersSec() {
+    const index = activeElem[0];
+    const numbersArr = [];
+
+    items[index].forEach((item) => {
+      numbersArr.push(item.playerNumber);
+    });
+    section = [...numbersArr];
+  }
+
+  function checkDoubleNumber(inputedNums, checkedItems) {
     const checkedNumbers = [];
     let index;
 
-    for (let i = 0; i <= arr.length - 1; i++) {
+    for (let i = 0; i <= inputedNums.length - 1; i++) {
       if (
-        (checkedNumbers.includes(arr[i]) &&
+        (checkedNumbers.includes(inputedNums[i]) &&
           allDoubleNumbersWarnings.length === 0) ||
-        (checkedNumbers.includes(arr[i]) &&
+        (checkedNumbers.includes(inputedNums[i]) &&
           allDoubleNumbersWarnings.every(
             (item) => item.flat().join('') !== checkedItems.flat().join('')
           ))
@@ -654,7 +630,7 @@ function App() {
         allDoubleNumbersWarnings.push(checkedItems);
         break;
       }
-      if (!checkedNumbers.includes(arr[i])) {
+      if (!checkedNumbers.includes(inputedNums[i])) {
         index = allDoubleNumbersWarnings.findIndex(
           (item) => item.flat().join('') === checkedItems.flat().join('')
         );
@@ -662,14 +638,14 @@ function App() {
       if (index >= 0) {
         allDoubleNumbersWarnings.splice(index, 1);
       }
-      if (!checkedNumbers.includes(arr[i]) && arr[i] != null) {
-        checkedNumbers.push(arr[i]);
+      if (!checkedNumbers.includes(inputedNums[i]) && inputedNums[i] != null) {
+        checkedNumbers.push(inputedNums[i]);
       }
     }
   }
 
-  function doubleNumbersWarningShow(itemsArr, checkedItems) {
-    const itemsClone = [...itemsArr];
+  function doubleNumbersWarningShow(checkedItems) {
+    const itemsClone = [...items];
     if (
       allDoubleNumbersWarnings.every(
         (item) => item.flat().join('') !== checkedItems.flat().join('')
@@ -688,13 +664,43 @@ function App() {
       });
     }
 
-    setItems(itemsClone);
+    setItems(() => itemsClone);
   }
 
   function numberChangeHandler(value) {
     const itemsClone = [...items];
     itemsClone[activeElem[0]][activeElem[1]].playerNumber = value;
-    setItems(itemsClone);
+    setItems(() => itemsClone);
+  }
+
+  function onClickItemHandler(sectionIndex, itemIndex) {
+    onActiveElemHandler(sectionIndex, itemIndex);
+    if (activeElem[0] !== null) {
+      horizontalRow = inputedNumbersLine(horizontalPositions);
+      checkedHorItems = lineDeterminant(horizontalPositions);
+      verticalCol = inputedNumbersLine(verticalPositions);
+      checkedVertItems = lineDeterminant(verticalPositions);
+      inputedNumbersSec();
+      sectionDeterminant();
+    }
+  }
+
+  function onClickButtonHandler(value) {
+    if (activeElem[0] !== null) {
+      numberChangeHandler(value);
+      horizontalRow = inputedNumbersLine(horizontalPositions);
+      checkedHorItems = lineDeterminant(horizontalPositions);
+      verticalCol = inputedNumbersLine(verticalPositions);
+      checkedVertItems = lineDeterminant(verticalPositions);
+      inputedNumbersSec();
+      sectionDeterminant();
+      checkDoubleNumber(horizontalRow, checkedHorItems);
+      checkDoubleNumber(verticalCol, checkedVertItems);
+      checkDoubleNumber(section, checkedSection);
+      doubleNumbersWarningShow(checkedHorItems);
+      doubleNumbersWarningShow(checkedVertItems);
+      doubleNumbersWarningShow(checkedSection);
+    }
   }
 
   return (
@@ -705,11 +711,7 @@ function App() {
             {items[sectionIndex].map((__, itemIndex) => (
               <Item
                 key={itemIndex}
-                isActive={items[sectionIndex][itemIndex].isActive}
-                value={items[sectionIndex][itemIndex].playerNumber}
-                doubleNumberWarning={
-                  items[sectionIndex][itemIndex].doubleNumberWarning
-                }
+                itemProps={items[sectionIndex][itemIndex]}
                 onClick={() => onClickItemHandler(sectionIndex, itemIndex)}
               />
             ))}
@@ -726,7 +728,7 @@ function App() {
           />
         ))}
 
-        <DeleteButton onClick={() => onClickButtonHandler(null)} />
+        <NumberButton value='X' onClick={() => onClickButtonHandler(null)} />
       </NumPad>
     </div>
   );
